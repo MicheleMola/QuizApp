@@ -12,37 +12,46 @@ import AudioToolbox
 
 class ViewController: UIViewController {
   
-  let questionsPerRound = 4
-  var questionsAsked = 0
-  var correctQuestions = 0
   var indexOfSelectedQuestion: Int = 0
   
   var gameSound: SystemSoundID = 0
   
-  let trivia: [[String : String]] = [
+  /*let trivia: [[String : String]] = [
     ["Question": "Only female koalas can whistle", "Answer": "False"],
     ["Question": "Blue whales are technically whales", "Answer": "True"],
     ["Question": "Camels are cannibalistic", "Answer": "False"],
     ["Question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "Answer": "True"]
-  ]
+  ]*/
   
   let quizManager = QuizManager()
+  var question: Question!
   
   @IBOutlet weak var questionField: UILabel!
-  @IBOutlet weak var trueButton: UIButton!
-  @IBOutlet weak var falseButton: UIButton!
-  @IBOutlet weak var playAgainButton: UIButton!
+  @IBOutlet weak var option1: UIButton!
+  @IBOutlet weak var option2: UIButton!
+  @IBOutlet weak var option3: UIButton!
+  @IBOutlet weak var option4: UIButton!
+  
+  @IBOutlet weak var normalButton: UIButton!
+  @IBOutlet weak var lightningButton: UIButton!
+  
+  @IBOutlet weak var feedbackLabel: UILabel!
+  
+  var answerButtons: [UIButton] = []
+  
+  let colorButtons = UIColor(red: 12/255, green: 121/255, blue: 150/255, alpha: 1)
+  let positiveFeedback: (text: String, color: UIColor) = ("Correct!", UIColor(red: 12/255, green: 121/255, blue: 150/255, alpha: 1))
+  let negativeFeedback: (text: String, color: UIColor) = ("Sorry, wrong answer!!", UIColor.red)
   
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    loadGameStartSound()
+    /*loadGameStartSound()
     // Start game
-    playGameStartSound()
-    displayQuestion()
-    
-    
-    print(self.quizManager.getRandomQuestion())
+    playGameStartSound()*/
+    answerButtons = [option1, option2, option3, option4]
+
+    initHome()
   }
   
   override func didReceiveMemoryWarning() {
@@ -50,62 +59,125 @@ class ViewController: UIViewController {
     // Dispose of any resources that can be recreated.
   }
   
-  func displayQuestion() {
-    indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: trivia.count)
-    let questionDictionary = trivia[indexOfSelectedQuestion]
-    questionField.text = questionDictionary["Question"]
-    playAgainButton.isHidden = true
+  func initHome() {
+    hideAnswers()
+    questionField.isHidden = true
+    feedbackLabel.isHidden = true
+    
+    normalButton.isHidden = false
+    normalButton.setTitle("Normal Mode", for: .normal)
+    
+    lightningButton.setTitle("Lightning Mode", for: .normal)
+  }
+  
+  
+  func displayQuestionAndAnswers() {
+    hideAnswers()
+    
+    self.question = quizManager.getRandomQuestion()
+    
+    questionField.text = self.question.text
+    
+    questionField.isHidden = false
+    normalButton.isHidden = true
+    lightningButton.isHidden = true
+    feedbackLabel.isHidden = true
+    
+    for index in 0..<self.question.answers.count {
+      let button = answerButtons[index]
+      button.setTitle(self.question.answers[index].text, for: .normal)
+      button.backgroundColor = colorButtons
+      button.isHidden = false
+    }
+  }
+  
+  func hideAnswers() {
+    for answer in answerButtons {
+      answer.isHidden = true
+    }
   }
   
   func displayScore() {
     // Hide the answer buttons
-    trueButton.isHidden = true
-    falseButton.isHidden = true
+    hideAnswers()
     
     // Display play again button
-    playAgainButton.isHidden = false
+    normalButton.isHidden = true
+
+    lightningButton.isHidden = false
+    lightningButton.setTitle("Play Again", for: .normal)
+
+    feedbackLabel.isHidden = true
     
-    questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
+    questionField.text = self.quizManager.feedbackRound()
     
+    self.quizManager.resetGame()
   }
   
   @IBAction func checkAnswer(_ sender: UIButton) {
+    disableAndEnableClickOnAnswers()
     
-    
-    // Increment the questions asked counter
-    questionsAsked += 1
-    
-    let selectedQuestionDict = trivia[indexOfSelectedQuestion]
-    let correctAnswer = selectedQuestionDict["Answer"]
-    
-    if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
-      correctQuestions += 1
-      questionField.text = "Correct!"
-    } else {
-      questionField.text = "Sorry, wrong answer!"
+    for index in 0..<question.answers.count {
+      let button = answerButtons[index]
+      button.backgroundColor = question.answers[index].isCorrect ? positiveFeedback.color : negativeFeedback.color
     }
     
-    loadNextRoundWithDelay(seconds: 2)
+    let isCorrect = self.quizManager.isCorrect(answerWithIndex: sender.tag)
+    
+    if isCorrect {
+      feedbackLabel.text = positiveFeedback.text
+      feedbackLabel.textColor = positiveFeedback.color
+    } else {
+      feedbackLabel.text = negativeFeedback.text
+      feedbackLabel.textColor = negativeFeedback.color
+    }
+    
+    feedbackLabel.isHidden = false
+    normalButton.isHidden = false
+    
+    //loadNextRoundWithDelay(seconds: 2)
+  }
+  
+  func disableAndEnableClickOnAnswers() {
+    for answer in answerButtons {
+      answer.isEnabled = !answer.isEnabled
+    }
   }
   
   func nextRound() {
-    if questionsAsked == questionsPerRound {
+    if self.quizManager.isGameOver() {
       // Game is over
       displayScore()
     } else {
       // Continue game
-      displayQuestion()
+      disableAndEnableClickOnAnswers()
+      displayQuestionAndAnswers()
     }
   }
   
-  @IBAction func playAgain() {
-    // Show the answer buttons
-    trueButton.isHidden = false
-    falseButton.isHidden = false
+  @IBAction func normalAndNextQuestion(_ sender: UIButton) {
+    if sender.title(for: .normal) == "Normal Mode" {
+      displayQuestionAndAnswers()
+      normalButton.setTitle("Next Question", for: .normal)
+    } else {
+      nextRound()
+    }
+  }
+  
+  @IBAction func lightningAndPlayAgainButton(_ sender: UIButton) {
+    // Activate timer
     
-    questionsAsked = 0
-    correctQuestions = 0
-    nextRound()
+    normalButton.setTitle("Next Question", for: .normal)
+    
+    if sender.title(for: .normal) == "Lightning Mode" {
+      lightningButton.setTitle("Play Again", for: .normal)
+      displayQuestionAndAnswers()
+    } else {
+      lightningButton.setTitle("Lightning Mode", for: .normal)
+      disableAndEnableClickOnAnswers()
+      initHome()
+    }
+    
   }
   
   

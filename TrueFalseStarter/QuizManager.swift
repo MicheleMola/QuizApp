@@ -9,18 +9,23 @@
 import Foundation
 import GameKit
 
-struct QuizManager {
+class QuizManager {
   
   let questions: [Question]
   let quiz: Quiz
+  var arrayOfRandomIndexes = [Int]()
+  let questionsPerRound = 4
+  var questionsAsked = 0
+  var correctQuestions = 0
+  var indexRandom = 0
+
   
   init() {
     self.questions = [
       Question(text: "This was the only US President to serve more than two consecutive terms.",
                answers: [Answer(text: "George Washington", isCorrect: false),
                          Answer(text: "Franklin D. Roosevelt", isCorrect: true),
-                         Answer(text: "Woodrow Wilson", isCorrect: false),
-                         Answer(text: "Andrew Jackson", isCorrect: false)]
+                         Answer(text: "Woodrow Wilson", isCorrect: false)]
       ),
       Question(text: "Which of the following countries has the most residents?",
                answers: [Answer(text: "Nigeria", isCorrect: true),
@@ -83,9 +88,59 @@ struct QuizManager {
   
   
   func getRandomQuestion() -> Question {
-    let indexRandom = GKRandomSource.sharedRandom().nextInt(upperBound: self.quiz.questions.count)
+    
+    if self.arrayOfRandomIndexes.count == questionsPerRound {
+      self.arrayOfRandomIndexes = []
+    }
+    
+    indexRandom = GKRandomSource.sharedRandom().nextInt(upperBound: self.quiz.questions.count)
+    
+    while self.arrayOfRandomIndexes.contains(indexRandom) {
+      indexRandom = GKRandomSource.sharedRandom().nextInt(upperBound: self.quiz.questions.count)
+    }
+    
+    self.arrayOfRandomIndexes.append(indexRandom)
+    
     let question = self.quiz.questions[indexRandom]
     return question
   }
+  
+  /*func incrementQuestionsAsked() {
+    self.questionsAsked += 1
+  }
+  
+  func incrementCorrectQuestions() {
+    self.correctQuestions += 1
+  }*/
+  
+  func isCorrect(answerWithIndex index: Int) -> Bool {
+    self.questionsAsked += 1
+    
+    if self.quiz.questions[indexRandom].answers[index].isCorrect {
+      self.correctQuestions += 1
+      return true
+    }
+    
+    return false
+  }
+  
+  func isGameOver() -> Bool {
+    let isGameOver = self.questionsAsked == self.questionsPerRound ? true : false
+    return isGameOver
+  }
+  
+  func resetGame() {
+    self.questionsAsked = 0
+    self.correctQuestions = 0
+  }
+  
+  func feedbackRound() -> String {
+    return "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
+  }
+  
+  
+  
+
+  
   
 }
