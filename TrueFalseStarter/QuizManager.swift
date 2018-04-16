@@ -105,14 +105,6 @@ class QuizManager {
     return question
   }
   
-  /*func incrementQuestionsAsked() {
-    self.questionsAsked += 1
-  }
-  
-  func incrementCorrectQuestions() {
-    self.correctQuestions += 1
-  }*/
-  
   func isCorrect(answerWithIndex index: Int) -> Bool {
     self.questionsAsked += 1
     
@@ -138,9 +130,9 @@ class QuizManager {
     return "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
   }
   
-  
-  
+  func timeOut() {
+    self.questionsAsked += 1
 
-  
+  }
   
 }

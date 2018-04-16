@@ -37,6 +37,14 @@ class ViewController: UIViewController {
   
   @IBOutlet weak var feedbackLabel: UILabel!
   
+  @IBOutlet weak var progressView: UIProgressView!
+  @IBOutlet weak var labelCountdown: UILabel!
+  
+  var timerIsOn = false
+  var timer = Timer()
+  var timeRemaining = 15
+  var totalTime = 15
+  
   var answerButtons: [UIButton] = []
   
   let colorButtons = UIColor(red: 12/255, green: 121/255, blue: 150/255, alpha: 1)
@@ -61,8 +69,11 @@ class ViewController: UIViewController {
   
   func initHome() {
     hideAnswers()
+    
     questionField.isHidden = true
     feedbackLabel.isHidden = true
+    progressView.isHidden = true
+    labelCountdown.isHidden = true
     
     normalButton.isHidden = false
     normalButton.setTitle("Normal Mode", for: .normal)
@@ -73,6 +84,14 @@ class ViewController: UIViewController {
   
   func displayQuestionAndAnswers() {
     hideAnswers()
+
+    if !progressView.isHidden {
+      if !timerIsOn {
+        timeRemaining = 15
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerRunning), userInfo: nil, repeats: true)
+        timerIsOn = true
+      }
+    }
     
     self.question = quizManager.getRandomQuestion()
     
@@ -108,6 +127,8 @@ class ViewController: UIViewController {
     lightningButton.setTitle("Play Again", for: .normal)
 
     feedbackLabel.isHidden = true
+    progressView.isHidden = true
+    labelCountdown.isHidden = true
     
     questionField.text = self.quizManager.feedbackRound()
     
@@ -117,10 +138,9 @@ class ViewController: UIViewController {
   @IBAction func checkAnswer(_ sender: UIButton) {
     disableAndEnableClickOnAnswers()
     
-    for index in 0..<question.answers.count {
-      let button = answerButtons[index]
-      button.backgroundColor = question.answers[index].isCorrect ? positiveFeedback.color : negativeFeedback.color
-    }
+    startTimer()
+    
+    answersWithFeedback()
     
     let isCorrect = self.quizManager.isCorrect(answerWithIndex: sender.tag)
     
@@ -135,7 +155,23 @@ class ViewController: UIViewController {
     feedbackLabel.isHidden = false
     normalButton.isHidden = false
     
-    //loadNextRoundWithDelay(seconds: 2)
+  }
+  
+  func startTimer() {
+    if !progressView.isHidden {
+      if timerIsOn {
+        
+        timer.invalidate()
+        timerIsOn = false
+      }
+    }
+  }
+  
+  func answersWithFeedback() {
+    for index in 0..<question.answers.count {
+      let button = answerButtons[index]
+      button.backgroundColor = question.answers[index].isCorrect ? positiveFeedback.color : negativeFeedback.color
+    }
   }
   
   func disableAndEnableClickOnAnswers() {
@@ -156,8 +192,11 @@ class ViewController: UIViewController {
   }
   
   @IBAction func normalAndNextQuestion(_ sender: UIButton) {
+    
     if sender.title(for: .normal) == "Normal Mode" {
       displayQuestionAndAnswers()
+      progressView.isHidden = true
+      labelCountdown.isHidden = true
       normalButton.setTitle("Next Question", for: .normal)
     } else {
       nextRound()
@@ -165,26 +204,38 @@ class ViewController: UIViewController {
   }
   
   @IBAction func lightningAndPlayAgainButton(_ sender: UIButton) {
-    // Activate timer
     
     normalButton.setTitle("Next Question", for: .normal)
     
     if sender.title(for: .normal) == "Lightning Mode" {
       lightningButton.setTitle("Play Again", for: .normal)
+      progressView.isHidden = false
+      labelCountdown.isHidden = false
       displayQuestionAndAnswers()
     } else {
       lightningButton.setTitle("Lightning Mode", for: .normal)
       disableAndEnableClickOnAnswers()
       initHome()
     }
+  }
+  
+  func timeOut() {
     
+    timer.invalidate()
+    timerIsOn = false
+    disableAndEnableClickOnAnswers()
+    normalButton.isHidden = false
+    
+    self.quizManager.timeOut()
+    
+    answersWithFeedback()
   }
   
   
   
   // MARK: Helper Methods
   
-  func loadNextRoundWithDelay(seconds: Int) {
+  /*func loadNextRoundWithDelay(seconds: Int) {
     // Converts a delay in seconds to nanoseconds as signed 64 bit integer
     let delay = Int64(NSEC_PER_SEC * UInt64(seconds))
     // Calculates a time value to execute the method given current time and delay
@@ -194,7 +245,7 @@ class ViewController: UIViewController {
     DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
       self.nextRound()
     }
-  }
+  }*/
   
   func loadGameStartSound() {
     let pathToSoundFile = Bundle.main.path(forResource: "GameSound", ofType: "wav")
@@ -204,6 +255,21 @@ class ViewController: UIViewController {
   
   func playGameStartSound() {
     AudioServicesPlaySystemSound(gameSound)
+  }
+  
+  func timerRunning() {
+    
+    if timeRemaining >= 0 {
+    
+      progressView.setProgress(Float(timeRemaining)/Float(totalTime), animated: false)
+      labelCountdown.text = "\(timeRemaining)"
+      
+    } else {
+      timeOut()
+    }
+    
+    timeRemaining -= 1
+
   }
 }
 
