@@ -32,7 +32,7 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="GrL-Zb-MiJ">
-                                <rect key="frame" x="36" y="236.5" width="303" height="406"/>
+                                <rect key="frame" x="36" y="236.5" width="303" height="414"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="8Yc-JO-jQs">
                                         <rect key="frame" x="0.0" y="0.0" width="303" height="248"/>
@@ -91,8 +91,8 @@
                                             </button>
                                         </subviews>
                                     </stackView>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="18" translatesAutoresizingMaskIntoConstraints="NO" id="AB5-N4-jcD">
-                                        <rect key="frame" x="0.0" y="288" width="303" height="118"/>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="26" translatesAutoresizingMaskIntoConstraints="NO" id="AB5-N4-jcD">
+                                        <rect key="frame" x="0.0" y="288" width="303" height="126"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K17-uy-MvB">
                                                 <rect key="frame" x="0.0" y="0.0" width="303" height="50"/>
@@ -108,7 +108,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="oA6-Fo-lvc">
-                                                <rect key="frame" x="0.0" y="68" width="303" height="50"/>
+                                                <rect key="frame" x="0.0" y="76" width="303" height="50"/>
                                                 <color key="backgroundColor" red="0.0" green="0.57647058819999997" blue="0.52941176469999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="50" id="N05-hr-dhh"/>

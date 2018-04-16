@@ -57,8 +57,7 @@ class QuizManager {
     Question(text: "Which of the following rivers is longest?",
              answers: [Answer(text: "Yangtze", isCorrect: false),
                        Answer(text: "Mississippi", isCorrect: true),
-                       Answer(text: "Congo", isCorrect: false),
-                       Answer(text: "Mekong", isCorrect: false)]
+                       Answer(text: "Congo", isCorrect: false)]
     ),
     Question(text: "Which city is the oldest?",
              answers: [Answer(text: "Mexico City", isCorrect: true),
@@ -74,7 +73,6 @@ class QuizManager {
     ),
     Question(text: "Which of these countries won the most medals in the 2012 Summer Games?",
              answers: [Answer(text: "France", isCorrect: false),
-                       Answer(text: "Germany", isCorrect: false),
                        Answer(text: "Japan", isCorrect: false),
                        Answer(text: "Great Britian", isCorrect: true)]
     )

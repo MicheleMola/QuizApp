@@ -12,30 +12,46 @@ import AudioToolbox
 
 class ViewController: UIViewController {
   
+  // Init QuizManager object to manage the game
   let quizManager = QuizManager()
+  
+  // Question object
   var question: Question!
   
+  // Label that represents the text of the question
   @IBOutlet weak var questionField: UILabel!
+  
+  // Buttons representing the answers
   @IBOutlet weak var option1: UIButton!
   @IBOutlet weak var option2: UIButton!
   @IBOutlet weak var option3: UIButton!
   @IBOutlet weak var option4: UIButton!
   
+  // Reusable button ("Normal Mode" and "Next Question")
   @IBOutlet weak var normalButton: UIButton!
+  
+  // Reusable button ("Lightning Mode" and "Play Again")
   @IBOutlet weak var lightningButton: UIButton!
   
+  // Label for feedback text
   @IBOutlet weak var feedbackLabel: UILabel!
   
+  // Progress View for graphic countdown
   @IBOutlet weak var progressView: UIProgressView!
+  
+  // Label with numerical countdown
   @IBOutlet weak var labelCountdown: UILabel!
   
+  // Set of variables for the timer
   var timerIsOn = false
   var timer = Timer()
   var timeRemaining = 15
-  var totalTime = 15
+  let totalTime = 15
   
+  // Collection of answer buttons
   var answerButtons: [UIButton] = []
 
+  // Answer button color
   let colorButtons = UIColor(red: 12/255, green: 121/255, blue: 150/255, alpha: 1)
   
   // Tuples that contain text and color of feedback
@@ -44,6 +60,9 @@ class ViewController: UIViewController {
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    
+    // Round buttons
+    roundedButtons()
     
     // Create a collection of answer buttons
     answerButtons = [option1, option2, option3, option4]
@@ -77,6 +96,18 @@ class ViewController: UIViewController {
     // Show button for Lightning Mode and change set title
     lightningButton.isHidden = false
     lightningButton.setTitle("Lightning Mode", for: .normal)
+  }
+  
+  func roundedButtons() {
+    option1.layer.cornerRadius = 10
+    option2.layer.cornerRadius = 10
+    option3.layer.cornerRadius = 10
+    option4.layer.cornerRadius = 10
+    
+    normalButton.layer.cornerRadius = 10
+    lightningButton.layer.cornerRadius = 10
+
+
   }
   
   
@@ -185,25 +216,45 @@ class ViewController: UIViewController {
   }
   
   func startTimer() {
+    
+    // Check if the Progress view is shown
     if !progressView.isHidden {
+      
+      // Check if the timer isn't On
       if !timerIsOn {
+        
+        // Reset time remaining for the new question
         timeRemaining = 15
+        
+        // Schedule the timerRunning function one time per second
         timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerRunning), userInfo: nil, repeats: true)
+        
+        // Set timerIsOn to true
         timerIsOn = true
       }
     }
   }
   
   func stopTimer() {
+    
+    // Check if the Progress view is shown
     if !progressView.isHidden {
+      
+      // Check if the timer is On
       if timerIsOn {
+        
+        // Stops the timer
         timer.invalidate()
+        
+        // Set timerIsOn to false
         timerIsOn = false
       }
     }
   }
   
   func answersWithFeedback() {
+    
+    // Loop on the number of answers for question and I change background color to the buttons
     for index in 0..<question.answers.count {
       let button = answerButtons[index]
       button.backgroundColor = question.answers[index].isCorrect ? positiveFeedback.color : negativeFeedback.color
@@ -211,59 +262,100 @@ class ViewController: UIViewController {
   }
   
   func disableAndEnableClickOnAnswers() {
+    
+    // Enable all the answers if they are disabled and vice versa
     for answer in answerButtons {
       answer.isEnabled = !answer.isEnabled
     }
   }
   
   func nextRound() {
+    
+    // Check if the round is over
     if self.quizManager.isGameOver() {
-      // Game is over
+      // Game is over and show the score
       displayScore()
     } else {
       // Continue game
+      
+      // Enable the clicks on the answers
       disableAndEnableClickOnAnswers()
+      
+      // Show a new question
       displayQuestionAndAnswers()
     }
   }
   
   @IBAction func normalAndNextQuestion(_ sender: UIButton) {
     
+    // Check if the button title is "Normal Mode"
     if sender.title(for: .normal) == "Normal Mode" {
+      
+      // Show the first question
       displayQuestionAndAnswers()
+      
+      // Hide Progress view and countdown for Normal Mode
       progressView.isHidden = true
       labelCountdown.isHidden = true
+      
+      // Change button title to reuse it.
       normalButton.setTitle("Next Question", for: .normal)
     } else {
+      
+      // Call nextRound function
       nextRound()
     }
   }
   
   @IBAction func lightningAndPlayAgainButton(_ sender: UIButton) {
     
+    // Change button title from "Normal Mode" to "Next Question" to reuse it.
     normalButton.setTitle("Next Question", for: .normal)
     
+    // Check if the button title is "Lightning Mode"
     if sender.title(for: .normal) == "Lightning Mode" {
+      
+      // Change button title to reuse it.
       lightningButton.setTitle("Play Again", for: .normal)
+      
+      // Show Progress view and countdown for Lightning Mode
       progressView.isHidden = false
       labelCountdown.isHidden = false
+      
+      // Show the first question
       displayQuestionAndAnswers()
     } else {
+      // Play again
+      
+      // Change button title from "Play Again" to "Lightning Mode" to reuse it
       lightningButton.setTitle("Lightning Mode", for: .normal)
+      
+      // Enable the clicks on the answers
       disableAndEnableClickOnAnswers()
+      
+      // Back to the menu to start new round
       initHome()
     }
   }
   
   func timeOut() {
     
+    // Stops the timer
     timer.invalidate()
+    
+    // Set timerIsOn to false
     timerIsOn = false
+    
+    // Disable the clicks on the answers
     disableAndEnableClickOnAnswers()
+    
+    // Show the "Next Question" button
     normalButton.isHidden = false
     
+    // Time expired on the question
     self.quizManager.timeOut()
     
+    // Change background color to the buttons
     answersWithFeedback()
   }
   
@@ -272,15 +364,22 @@ class ViewController: UIViewController {
   
   func timerRunning() {
     
+    // Check if the remaining time is greater or equal to zero
     if timeRemaining >= 0 {
     
+      // Update Progress view
       progressView.setProgress(Float(timeRemaining)/Float(totalTime), animated: false)
+      
+      // Update countdown
       labelCountdown.text = "\(timeRemaining)"
       
     } else {
+      
+      // Time out
       timeOut()
     }
     
+    // Decrease the remaining time
     timeRemaining -= 1
   }
 }
