@@ -12,17 +12,6 @@ import AudioToolbox
 
 class ViewController: UIViewController {
   
-  var indexOfSelectedQuestion: Int = 0
-  
-  var gameSound: SystemSoundID = 0
-  
-  /*let trivia: [[String : String]] = [
-    ["Question": "Only female koalas can whistle", "Answer": "False"],
-    ["Question": "Blue whales are technically whales", "Answer": "True"],
-    ["Question": "Camels are cannibalistic", "Answer": "False"],
-    ["Question": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat", "Answer": "True"]
-  ]*/
-  
   let quizManager = QuizManager()
   var question: Question!
   
@@ -46,19 +35,20 @@ class ViewController: UIViewController {
   var totalTime = 15
   
   var answerButtons: [UIButton] = []
-  
+
   let colorButtons = UIColor(red: 12/255, green: 121/255, blue: 150/255, alpha: 1)
+  
+  // Tuples that contain text and color of feedback
   let positiveFeedback: (text: String, color: UIColor) = ("Correct!", UIColor(red: 12/255, green: 121/255, blue: 150/255, alpha: 1))
   let negativeFeedback: (text: String, color: UIColor) = ("Sorry, wrong answer!!", UIColor.red)
-  
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    /*loadGameStartSound()
-    // Start game
-    playGameStartSound()*/
+    
+    // Create a collection of answer buttons
     answerButtons = [option1, option2, option3, option4]
 
+    // Setup game menu
     initHome()
   }
   
@@ -68,40 +58,53 @@ class ViewController: UIViewController {
   }
   
   func initHome() {
+    
+    // Hide all answers
     hideAnswers()
     
+    // Hide question label and feedback label that I don't need
     questionField.isHidden = true
     feedbackLabel.isHidden = true
+    
+    // Hide Progress view and countdown that I don't need
     progressView.isHidden = true
     labelCountdown.isHidden = true
     
+    // Show button for Normal Mode and change set title
     normalButton.isHidden = false
     normalButton.setTitle("Normal Mode", for: .normal)
     
+    // Show button for Lightning Mode and change set title
+    lightningButton.isHidden = false
     lightningButton.setTitle("Lightning Mode", for: .normal)
   }
   
   
   func displayQuestionAndAnswers() {
+    
+    // Hide all answers
     hideAnswers()
 
-    if !progressView.isHidden {
-      if !timerIsOn {
-        timeRemaining = 15
-        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerRunning), userInfo: nil, repeats: true)
-        timerIsOn = true
-      }
-    }
+    // Start timer if the mode is lighting
+    startTimer()
     
+    // Get random question from quizManager object
     self.question = quizManager.getRandomQuestion()
     
+    // Show question label that contains the text of the question
+    questionField.isHidden = false
+    
+    // Set text of the question
     questionField.text = self.question.text
     
-    questionField.isHidden = false
+    // Hide buttons that I don't need
     normalButton.isHidden = true
     lightningButton.isHidden = true
+    
+    // Hide feedback label
     feedbackLabel.isHidden = true
     
+    // Setup answers for the current question
     for index in 0..<self.question.answers.count {
       let button = answerButtons[index]
       button.setTitle(self.question.answers[index].text, for: .normal)
@@ -111,56 +114,89 @@ class ViewController: UIViewController {
   }
   
   func hideAnswers() {
+    
+    // Hide all answers
     for answer in answerButtons {
       answer.isHidden = true
     }
   }
   
   func displayScore() {
-    // Hide the answer buttons
+    
+    // Hide all answers
     hideAnswers()
     
-    // Display play again button
+    // Hide Normal Mode / Next Question Button
     normalButton.isHidden = true
 
+    // Show Play Again button
     lightningButton.isHidden = false
+    
+    // Change title to Lightning button from Lightning Mode to Play Again
     lightningButton.setTitle("Play Again", for: .normal)
 
+    // Hide feedback label
     feedbackLabel.isHidden = true
+    
+    // Hide Progress View and Countdown
     progressView.isHidden = true
     labelCountdown.isHidden = true
     
+    // Set feedback round in question label
     questionField.text = self.quizManager.feedbackRound()
     
+    // Reset round
     self.quizManager.resetGame()
   }
   
   @IBAction func checkAnswer(_ sender: UIButton) {
+    
+    // Disable click on answers
     disableAndEnableClickOnAnswers()
     
-    startTimer()
+    // Stop timer
+    stopTimer()
     
+    // Change color to the answers
     answersWithFeedback()
     
+    // Get feedback on the clicked answer
     let isCorrect = self.quizManager.isCorrect(answerWithIndex: sender.tag)
     
+    // Check if the clicked answer is correct
     if isCorrect {
+      
+      // Set positive feedback in feedback label and change text color
       feedbackLabel.text = positiveFeedback.text
       feedbackLabel.textColor = positiveFeedback.color
     } else {
+      
+      // Set negative feedback in feedback label and change text color
       feedbackLabel.text = negativeFeedback.text
       feedbackLabel.textColor = negativeFeedback.color
     }
     
+    // Show feedback label
     feedbackLabel.isHidden = false
+    
+    // Show Next Question Button
     normalButton.isHidden = false
     
   }
   
   func startTimer() {
     if !progressView.isHidden {
+      if !timerIsOn {
+        timeRemaining = 15
+        timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(timerRunning), userInfo: nil, repeats: true)
+        timerIsOn = true
+      }
+    }
+  }
+  
+  func stopTimer() {
+    if !progressView.isHidden {
       if timerIsOn {
-        
         timer.invalidate()
         timerIsOn = false
       }
@@ -232,30 +268,7 @@ class ViewController: UIViewController {
   }
   
   
-  
   // MARK: Helper Methods
-  
-  /*func loadNextRoundWithDelay(seconds: Int) {
-    // Converts a delay in seconds to nanoseconds as signed 64 bit integer
-    let delay = Int64(NSEC_PER_SEC * UInt64(seconds))
-    // Calculates a time value to execute the method given current time and delay
-    let dispatchTime = DispatchTime.now() + Double(delay) / Double(NSEC_PER_SEC)
-    
-    // Executes the nextRound method at the dispatch time on the main queue
-    DispatchQueue.main.asyncAfter(deadline: dispatchTime) {
-      self.nextRound()
-    }
-  }*/
-  
-  func loadGameStartSound() {
-    let pathToSoundFile = Bundle.main.path(forResource: "GameSound", ofType: "wav")
-    let soundURL = URL(fileURLWithPath: pathToSoundFile!)
-    AudioServicesCreateSystemSoundID(soundURL as CFURL, &gameSound)
-  }
-  
-  func playGameStartSound() {
-    AudioServicesPlaySystemSound(gameSound)
-  }
   
   func timerRunning() {
     
@@ -269,7 +282,6 @@ class ViewController: UIViewController {
     }
     
     timeRemaining -= 1
-
   }
 }
 
