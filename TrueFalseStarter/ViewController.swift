@@ -18,6 +18,9 @@ class ViewController: UIViewController {
   // Question object
   var question: Question!
   
+  // Quiz title
+  @IBOutlet weak var quizTitle: UILabel!
+  
   // Label that represents the text of the question
   @IBOutlet weak var questionField: UILabel!
   
@@ -61,6 +64,9 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    // Set Quiz title
+    quizTitle.text = quizManager.quiz.name
+    
     // Round buttons
     roundedButtons()
     
@@ -99,6 +105,8 @@ class ViewController: UIViewController {
   }
   
   func roundedButtons() {
+    // Rounds all buttons
+    
     option1.layer.cornerRadius = 10
     option2.layer.cornerRadius = 10
     option3.layer.cornerRadius = 10
@@ -106,10 +114,7 @@ class ViewController: UIViewController {
     
     normalButton.layer.cornerRadius = 10
     lightningButton.layer.cornerRadius = 10
-
-
   }
-  
   
   func displayQuestionAndAnswers() {
     

@@ -11,13 +11,25 @@ import GameKit
 
 class QuizManager {
   
+  // Object of the Quiz class
   let quiz: Quiz
+  
+  // Array of random indices to avoid repetitions of the same question in a single round
   var arrayOfRandomIndexes = [Int]()
+  
+  // Number of questions for round
   let questionsPerRound = 4
+  
+  // Counter of the submitted questions per round
   var questionsAsked = 0
+  
+  // Counter of the right answers per round
   var correctQuestions = 0
+  
+  // Random generated index
   var indexRandom = 0
   
+  // Array of question to show during the quiz
   var questions = [
     Question(text: "This was the only US President to serve more than two consecutive terms.",
              answers: [Answer(text: "George Washington", isCorrect: false),
@@ -78,12 +90,16 @@ class QuizManager {
     )
   ]
   
+  // Create two object of the SoundManager class (One to manage the sound on correct answer and the other to manage the sound on wrong answer)
   let correctSound = SoundManager(fileName: "CorrectAnswer", fileType: "mp3", idSound: 0)
   let wrongSound = SoundManager(fileName: "WrongAnswer", fileType: "mp3", idSound: 1)
   
   init() {
     
-    self.quiz = Quiz(name: "Fantastic", questions: self.questions)
+    // Create Quiz object use the init with two parameters of the Quiz class
+    self.quiz = Quiz(name: "My Quiz", questions: self.questions)
+    
+    // Load sound
     loadSound()
   }
   
@@ -92,52 +108,78 @@ class QuizManager {
     wrongSound.load()
   }
   
+  // Method to return a random question without repetition
   func getRandomQuestion() -> Question {
     
-    if self.arrayOfRandomIndexes.count == questionsPerRound {
-      self.arrayOfRandomIndexes = []
-    }
-    
+    // Generate random number between 0 and questions.count -1
     indexRandom = GKRandomSource.sharedRandom().nextInt(upperBound: self.quiz.questions.count)
     
+    // Loop until the generated random index is not present in arrayOfRandomIndexes
     while self.arrayOfRandomIndexes.contains(indexRandom) {
+      
+      // Generate a new random index
       indexRandom = GKRandomSource.sharedRandom().nextInt(upperBound: self.quiz.questions.count)
     }
     
+    // Add new random index to array
     self.arrayOfRandomIndexes.append(indexRandom)
     
+    // Return random question
     let question = self.quiz.questions[indexRandom]
     return question
   }
   
+  // Check if the clicked answer is correct
   func isCorrect(answerWithIndex index: Int) -> Bool {
+    
+    // Increment the counter of the submitted questions per round
     self.questionsAsked += 1
     
     if self.quiz.questions[indexRandom].answers[index].isCorrect {
+      
+      // Increment the counter of the correct questions
       self.correctQuestions += 1
+      
+      // Play sound per correct answer
       correctSound.play()
+      
       return true
     }
+    
+    // Else play sound per wrong answer
     wrongSound.play()
+    
     return false
   }
   
   func isGameOver() -> Bool {
-    let isGameOver = self.questionsAsked == self.questionsPerRound ? true : false
-    return isGameOver
+    
+    // Check if the round is over
+    return self.questionsAsked == self.questionsPerRound ? true : false
   }
   
   func resetGame() {
+    // Reset the counters for the new round
     self.questionsAsked = 0
     self.correctQuestions = 0
+    
+    // Remove the random indices from array for the new round
+    self.arrayOfRandomIndexes = []
   }
   
   func feedbackRound() -> String {
+    
+    // Return round's feedback
     return "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
   }
   
   func timeOut() {
+    
+    // Increment the counter of the submitted questions per round
     self.questionsAsked += 1
+    
+    // Play sound per wrong answer
+    wrongSound.play()
   }
   
 }

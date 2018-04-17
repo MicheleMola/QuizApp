@@ -20,12 +20,14 @@ class SoundManager {
     self.idSound = idSound
   }
   
+  // Load sound file
   func load() {
     let pathToSoundFile = Bundle.main.path(forResource: self.fileName, ofType: self.fileType)
     let soundURL = URL(fileURLWithPath: pathToSoundFile!)
     AudioServicesCreateSystemSoundID(soundURL as CFURL, &idSound)
   }
   
+  // Play sound
   func play() {
     AudioServicesPlaySystemSound(idSound)
   }
