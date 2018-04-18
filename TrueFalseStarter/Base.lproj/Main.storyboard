@@ -31,8 +31,8 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="40" translatesAutoresizingMaskIntoConstraints="NO" id="GrL-Zb-MiJ">
-                                <rect key="frame" x="36" y="236.5" width="303" height="414"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="GrL-Zb-MiJ">
+                                <rect key="frame" x="36" y="232.5" width="303" height="404"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="8Yc-JO-jQs">
                                         <rect key="frame" x="0.0" y="0.0" width="303" height="248"/>
@@ -92,7 +92,7 @@
                                         </subviews>
                                     </stackView>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="26" translatesAutoresizingMaskIntoConstraints="NO" id="AB5-N4-jcD">
-                                        <rect key="frame" x="0.0" y="288" width="303" height="126"/>
+                                        <rect key="frame" x="0.0" y="278" width="303" height="126"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="K17-uy-MvB">
                                                 <rect key="frame" x="0.0" y="0.0" width="303" height="50"/>
@@ -131,20 +131,20 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sorry, that's not it" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cuJ-w1-0Kr">
-                                <rect key="frame" x="116.5" y="191.5" width="142.5" height="21"/>
+                                <rect key="frame" x="116.5" y="187.5" width="142.5" height="21"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
                                 <color key="textColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="1" translatesAutoresizingMaskIntoConstraints="NO" id="usm-oS-Vgc">
-                                <rect key="frame" x="36" y="159.5" width="303" height="12"/>
+                                <rect key="frame" x="36" y="155.5" width="303" height="12"/>
                                 <color key="tintColor" red="0.094117647060000004" green="0.55294117649999996" blue="0.80392156859999997" alpha="1" colorSpace="calibratedRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="12" id="jHM-2k-nZ6"/>
                                 </constraints>
                             </progressView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="15" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Lde-CK-HLa">
-                                <rect key="frame" x="36" y="183.5" width="29" height="31"/>
+                                <rect key="frame" x="36" y="179.5" width="29" height="31"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="29" id="JCf-uJ-VSK"/>
                                     <constraint firstAttribute="height" constant="31" id="jwq-8R-H35"/>
@@ -165,7 +165,7 @@
                             <constraint firstItem="cuJ-w1-0Kr" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="Lfm-H8-Uom"/>
                             <constraint firstAttribute="trailingMargin" secondItem="GrL-Zb-MiJ" secondAttribute="trailing" constant="20" id="LkQ-Z7-P5h"/>
                             <constraint firstItem="GrL-Zb-MiJ" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="20" id="N9s-ce-cff"/>
-                            <constraint firstItem="usm-oS-Vgc" firstAttribute="top" secondItem="I3V-ih-1Ky" secondAttribute="bottom" constant="8" id="Siw-ve-U8s"/>
+                            <constraint firstItem="usm-oS-Vgc" firstAttribute="top" secondItem="I3V-ih-1Ky" secondAttribute="bottom" constant="4" id="Siw-ve-U8s"/>
                             <constraint firstAttribute="trailingMargin" secondItem="usm-oS-Vgc" secondAttribute="trailing" constant="20" id="cdb-1r-3t9"/>
                             <constraint firstItem="Lde-CK-HLa" firstAttribute="top" secondItem="usm-oS-Vgc" secondAttribute="bottom" constant="12" id="fRA-Lq-aeQ"/>
                             <constraint firstItem="DhM-VN-qW4" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="10" id="fZf-16-4Lc"/>
